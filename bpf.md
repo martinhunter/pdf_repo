@@ -97,6 +97,24 @@ SEC("tracepoint/syscalls/sys_enter_execvc")
 优点：最流行，开发效率高，可移植，可动态修改部分代码
 缺点：依赖多，运行时编译导致开销大，依赖目标环境头文件
 
+### example
+```python
+
+```
+
+#### 编写规则
+1. 适当的include
+2. 创建BPF_TABLE， BPF_HASH等bpf_map对象
+3. 添加要追踪的事件函数
+    - 函数名 = '追踪的event' + '\_\_' + '对应可追踪的函数'，如kprobe__*kernel_function_name*
+    - 函数名若自定义则需在BPF实例中手动注册
+    - 函数的第一个参数（必须）是Registers and BPF context， 剩余参数是要追踪的函数的参数（非必须）
+    - 函数中使用BPF_TABLE保存/变更数据
+    - 返回0  # ？？？什么时候返回其他
+4. BPF类可检测要hook的event函数是否存在
+5. BPF实例注册到event
+6. BPF实例可通过b\['bpf_map_name'\]来访问bpf_text中创建的map对象
+
 ### cilium [git](https://github.com/cilium/ebpf)
 优点：开发效率高，是容器技术的bpf开发工具
 
@@ -106,6 +124,20 @@ SEC("tracepoint/syscalls/sys_enter_execvc")
 ### bpftrace
 优点：直接通过命令行即可执行
 缺点：只适合简单的命令，不适合开发大型项目
+
+### 常见bpf_helpers
+u32 pid = bpf_get_current_pid_tgid();  # bcc\src\cc\export\helpers.h  无需include
+
+### hashmap对象
+#### BPF_HASH对象操作
+- currsock.update(&pid, &sk);
+- skpp = currsock.lookup(&pid); if (skpp == 0) return 0;	// missed entry
+- currsock.delete(&pid);
+#### BPF_TABLE
+
+
+#### potential bugs
+open_perf_buffer依赖online的cpu, down的cpu则会丢失ring buffer?
 
 ### 学习资料
 - https://space.bilibili.com/518970180/video?tid=0&pn=2&keyword=&order=pubdate

@@ -3,22 +3,23 @@ import sys
 
 
 def process(args):
-    if args[1] == 'daemon':
+    if args[0] == 'daemon':
         os.system('python3 daemon.py {} &'.format(' '.join(args[2:])))
         return 'daemon operated'
     else:
         return 'unknown'
 
 help_msg = """example:
-    python3 server
-    python3 
+    python3 entry.py server &
+    python3 entry.py daemon 
 """
 
 def entry():
     args = sys.argv[1:]
     if not args:
         print(help_msg)
-    if args[1] == 'server':
+        return
+    if args[0] == 'server':
         from server import start_server
         ip = "127.0.0.1"
         port = 8080

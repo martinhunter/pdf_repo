@@ -9,13 +9,24 @@ def process(args):
     else:
         return 'unknown'
 
+help_msg = """example:
+    python3 server
+    python3 
+"""
 
 def entry():
     args = sys.argv[1:]
-
+    if not args:
+        print(help_msg)
     if args[1] == 'server':
         from server import start_server
-        start_server("127.0.0.1", 8080)
+        ip = "127.0.0.1"
+        port = 8080
+        if len(args) >= 3:
+            ip = args[2]
+        if len(args) >= 4 and args[3].isdigit():
+            port = int(args[3])
+        start_server(ip, port)
     else:
         process(args)
 
